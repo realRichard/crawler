@@ -2,9 +2,21 @@ import requests
 from pyquery import PyQuery as pq
 import os
 
+from mongo_config import client
+
 from model.movie import Movie
 
 from utils import log
+
+
+# 设置要使用的数据库
+db = client['douban']
+
+
+def insert_many(s):
+	# MongoDB的每个数据库又包含许多集合 collection
+	# 它们类似于关系型数据库中的表
+	db['movieTop250'].insert_many(s)
 
 
 def movie_from_item(item):
@@ -98,6 +110,18 @@ def download_img(movies):
 			log(filename, '已下载过, 无需重复下载')
 
 
+# 用一个字典解析语法
+def transfer(i):
+	dicts = {k: v for k, v in i.__dict__.items()}
+	return dicts
+
+
+# 把每个 movie object 转成, 字典表示
+def dict_from_object(movies):
+	dicts = [transfer(i) for i in movies]
+	return dicts
+	
+
 def main():
 	# 'https: // movie.douban.com/top250'
 	# 豆瓣网直接复制下来的 url 有病, invalidURL  , no host supplied
@@ -107,11 +131,22 @@ def main():
 	https://movie.douban.com/top250?start=25&filter=
 	https://movie.douban.com/top250?start=50&filter=
 	'''
+	# 用于将所有 movie 的字典形式保存在一个 list, 便于插入 mongodb
+	movie_list = []
 	for i in range(0, 250, 25):
 		url = 'https://movie.douban.com/top250?start={}'.format(i)
 		movies = movies_from_url(url)
+		# 把每个 movie object 转成, 字典表示
+		dicts = dict_from_object(movies)
+		# 合并 list
+		movie_list += dicts
 		download_img(movies)
-		log('movies', i, movies)
+		# log('movies', i, movies)
+	# log('movies_list', type(movie_list), movie_list)
+	# 将数据存入 mongodb
+	# 虽然是插入一个 list, 但还要用 insert_many()
+	# 可能是一列表中的 dict 来衡量吧
+	insert_many(movie_list)
 
 
 if __name__ == '__main__':
