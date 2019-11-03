@@ -11,3 +11,6 @@ class Movie(Model):
 		self.cover_url = form.get('cover_url', '')
 		self.ranking = form.get('ranking', 0)
 		self.score = form.get('score', 0)
+		self.number_of_comments = form.get('number_of_comments', 0)
+
+		

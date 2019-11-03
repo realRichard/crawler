@@ -16,6 +16,11 @@ def movie_from_item(item):
 	form['cover_url'] = e('img').attr('src')
 	form['score'] = e('.rating_num').text()
 	form['ranking'] = e('em').text()
+	# 选评论人数比较麻烦
+	star = e('.star')
+	span = pq(star)
+	number_of_comments = span('span:nth-child(4)').text()
+	form['number_of_comments'] = number_of_comments
 	# 实例化一个 movie 类
 	movie = Movie(form)
 	return movie
@@ -42,7 +47,14 @@ def cached_url(url):
 			os.makedirs(folder)
 		# 执行网络请求, 并且把页面写入本地
 		log('开始执行请求')
-		r = requests.get(url)
+		'''
+		user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.70 Safari/537.36
+		User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.70 Safari/537.36
+		'''
+		headers = {
+			'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.70 Safari/537.36'
+		}
+		r = requests.get(url, headers)
 		with open(path, 'wb') as f:
 			# 写入文件保存
 			log('写入文件缓存')
