@@ -1,5 +1,6 @@
 import requests
 from pyquery import PyQuery as pq
+import os
 
 from model.movie import Movie
 
@@ -20,11 +21,38 @@ def movie_from_item(item):
 	return movie
 
 
+def cached_url(url):
+	'''
+	把资源缓存到本地, 这样之后就不用每次执行网络请求
+	节省时间
+	'''
+	folder = 'cached'
+	filename = url.split('=', 1)[-1] + '.html'
+	path = os.path.join(folder, filename)
+	# 如果本地有缓存, 直接读取返回
+	if os.path.exists(path):
+		with open(path, 'rb') as f:
+			s = f.read()
+			log('缓存返回')
+			return s
+	else:
+		# 如果本地没有缓存
+		# 判断是否有此目录, 没有就创建
+		if not os.path.exists(folder):
+			os.makedirs(folder)
+		# 执行网络请求, 并且把页面写入本地
+		log('开始执行请求')
+		r = requests.get(url)
+		with open(path, 'wb') as f:
+			# 写入文件保存
+			log('写入文件缓存')
+			f.write(r.content)
+		return r.content
+		
 
 def movies_from_url(url):
-	# 请求
-	r = requests.get(url)
-	page = r.content
+	# 缓存
+	page = cached_url(url)
 	# 返回一个 pyquery 对象
 	e = pq(page)
 	# 使用 jquery 语法, 得到 25 个div
@@ -46,7 +74,7 @@ def main():
 	for i in range(0, 250, 25):
 		url = 'https://movie.douban.com/top250?start={}'.format(i)
 		movies = movies_from_url(url)
-		log('Top250 movies', movies)
+		log('movies', i, movies)
 
 
 if __name__ == '__main__':
