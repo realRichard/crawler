@@ -72,7 +72,31 @@ def movies_from_url(url):
 	# 用函数解析每个div, 组一个数组返回, 里面是 movie object
 	movies = [movie_from_item(i) for i in items]
 	return movies
-	
+
+
+def download_img(movies):
+	folder = 'img'
+	# 如果没有此目录就创建
+	if not os.path.exists(folder):
+		os.makedirs(folder)
+	# movies 是一个 list, 每一个 movie 是一个 object
+	for i in movies:
+		# filename = i['title'].split()[1] + '.webp'
+		# TypeError: 'Movie' object is not subscriptable
+		# 对象属性不能用取下标的方式或语法去取
+		filename = i.title.split()[0] + '.webp'
+		path = os.path.join(folder, filename)
+		if not os.path.exists(path):
+			log('下载图片', filename)
+			headers = {
+				'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.70 Safari/537.36'
+			}
+			r = requests.get(i.cover_url, headers)
+			with open(path, 'wb') as f:
+				f.write(r.content)
+		else:
+			log(filename, '已下载过, 无需重复下载')
+
 
 def main():
 	# 'https: // movie.douban.com/top250'
@@ -86,6 +110,7 @@ def main():
 	for i in range(0, 250, 25):
 		url = 'https://movie.douban.com/top250?start={}'.format(i)
 		movies = movies_from_url(url)
+		download_img(movies)
 		log('movies', i, movies)
 
 
