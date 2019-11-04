@@ -1,6 +1,7 @@
 import requests
 from pyquery import PyQuery as pq
 import os
+import json
 
 from mongo_config import client
 
@@ -18,6 +19,26 @@ def insert_many(s):
 	# 它们类似于关系型数据库中的表
 	db['movieTop250'].insert_many(s)
 
+
+def save_to_file(s):
+	# 先转成 json 格式
+	# json.dumps 序列化时对中文默认使用的ascii编码
+	# 想输出真正的中文需要指定ensure_ascii = False
+	# data = json.dumps(s, indent=2, ensure_ascii=False)
+	folder = 'data'
+	if not os.path.exists(folder):
+		os.makedirs(folder)
+	filename = 'movie250.txt'
+	path = os.path.join(folder, filename)
+	if not os.path.exists(path):
+		log('写入文件')
+		# open() 一定要指定 encoding='utf-8' 
+		# 不然和 gbk 扯上关系, 可能中文 windows 默认打开文件 gbk, fuck
+		with open(path, 'w', encoding='utf-8') as fp:
+			json.dump(s, fp, ensure_ascii=False, indent=2)
+	else:
+		log('数据已保存, 无需再次保存')
+	
 
 def movie_from_item(item):
 	e = pq(item)
@@ -143,10 +164,16 @@ def main():
 		download_img(movies)
 		# log('movies', i, movies)
 	# log('movies_list', type(movie_list), movie_list)
+
+	# 两种存储数据的方式, mongodb, 写入数据文件(json格式)
+
 	# 将数据存入 mongodb
 	# 虽然是插入一个 list, 但还要用 insert_many()
-	# 可能是一列表中的 dict 来衡量吧
-	insert_many(movie_list)
+	# 可能是因为列表中有很多 dict 的原因
+	# insert_many(movie_list)
+
+	# 写入文件
+	save_to_file(movie_list)
 
 
 if __name__ == '__main__':
