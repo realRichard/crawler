@@ -1,4 +1,6 @@
-
+__pycache__
+data
 cached/175.html
 *.html
 *.webp
+.gitattributers
