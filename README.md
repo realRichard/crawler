@@ -1,3 +1,3 @@
 #   spider
 
-doubanMovie250
+doubanTop250

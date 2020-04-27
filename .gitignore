@@ -1,6 +1,8 @@
 __pycache__
 data
-cached/175.html
+cached
 *.html
 *.webp
 .gitattributers
+log.txt
+doubanTop250
