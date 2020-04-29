@@ -112,6 +112,8 @@ def model_from_item(item):
 	form['number_of_comments'] = number_of_comments
 	form['bd'] = e('.bd > p:nth-child(1)').text()
 	form['time'] = int(form.get('bd').split('\n', 1)[1][:4])
+	form['region'] = form.get('bd').split('\n', 1)[1].split('/')[1].split()
+	form['category'] = form.get('bd').split('\n', 1)[1].split('/')[-1].split()
 	# 实例化一个 movie 类
 	movie = Movie(form)
 	return movie
@@ -152,3 +154,33 @@ def cached_url(url):
 			log('content', r, r.status_code, r.url)
 			f.write(r.content)
 		return r.content
+
+
+def load(filename):
+	path = 'data/' + filename
+	with open(path, 'r', encoding='utf-8') as f:
+		return json.load(f)
+
+
+def get_data(filename, field):
+	s = load(filename)
+	data = []
+	for i in s:
+		data.append(i[field])
+	return data
+
+
+def merge_array(filename, field):
+	s = load(filename)
+	data = []
+	for i in s:
+		data += i[field]
+	return data
+
+
+def get_dict(filename, key, value):
+	s = load(filename)
+	data = {}
+	for i in s[:10]:
+		data[i[key].split()[0]] = i[value]
+	return data

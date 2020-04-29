@@ -14,3 +14,5 @@ class Movie(Model):
 		self.number_of_comments = form.get('number_of_comments', 0)
 		self.bd = form.get('bd', '')
 		self.time = form.get('time', '')
+		self.region = form.get('region', '')
+		self.category = form.get('category', '')
