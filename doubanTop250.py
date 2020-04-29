@@ -25,7 +25,7 @@ def main():
 		movies = models_from_url(url)
 		# 合并 list
 		movie_list += movies
-		download_img('doubanTop250', movies)
+		# download_img('doubanTop250', movies)
 	log('movie_list', type(movie_list), len(movie_list))
 	# 两种存储数据的方式, mongodb, 写入数据文件(json格式)
 	# insert_many(db, 'doubanTop250', movie_list)

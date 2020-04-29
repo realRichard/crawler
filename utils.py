@@ -103,13 +103,15 @@ def model_from_item(item):
 	form['title'] = e('.title').text()
 	form['quote'] = e('.inq').text()
 	form['cover_url'] = e('img').attr('src')
-	form['score'] = e('.rating_num').text()
-	form['ranking'] = e('em').text()
+	form['score'] = float(e('.rating_num').text())
+	form['ranking'] = int(e('em').text())
 	# 选评论人数比较麻烦
 	star = e('.star')
 	span = pq(star)
 	number_of_comments = span('span:nth-child(4)').text()
 	form['number_of_comments'] = number_of_comments
+	form['bd'] = e('.bd > p:nth-child(1)').text()
+	form['time'] = int(form.get('bd').split('\n', 1)[1][:4])
 	# 实例化一个 movie 类
 	movie = Movie(form)
 	return movie
