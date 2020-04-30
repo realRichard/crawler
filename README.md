@@ -47,3 +47,15 @@
 
 4. movie release time proportion
 !['movie region'](https://github.com/realRichard/crawler/blob/master/visualization/doubanTime.png 'movie region')
+
+***
+
+##  zhihuAnser
+
+### crawling anser data
+
+    question, question link, agreement numbers, author, anser content, comments...
+
+    Write to file in JSON format
+
+    save to mongodb

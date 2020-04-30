@@ -6,6 +6,7 @@ import requests
 from pyquery import PyQuery as pq
 
 from model.movie import Movie
+from model.anser import Anser
 
 
 def timestamp_datetime(value):
@@ -64,7 +65,10 @@ def models_from_url(url):
 	# 返回一个 pyquery 对象
 	e = pq(page)
 	# 使用 jquery 语法, 得到 25 个div
-	items = e('.item')
+	# douban movie
+	# items = e('.item')
+	# zhihuAnser
+	items = e('.zm-item')
 	# 用函数解析每个div, 组一个数组返回, 里面是 movie object
 	models = [model_from_item(i) for i in items]
 	dicts = dict_from_object(models)
@@ -98,25 +102,36 @@ def save_to_file(s, filename):
 
 def model_from_item(item):
 	e = pq(item)
-	# 保存电影信息
 	form = {}
-	form['title'] = e('.title').text()
-	form['quote'] = e('.inq').text()
-	form['cover_url'] = e('img').attr('src')
-	form['score'] = float(e('.rating_num').text())
-	form['ranking'] = int(e('em').text())
-	# 选评论人数比较麻烦
-	star = e('.star')
-	span = pq(star)
-	number_of_comments = span('span:nth-child(4)').text()
-	form['number_of_comments'] = number_of_comments
-	form['bd'] = e('.bd > p:nth-child(1)').text()
-	form['time'] = int(form.get('bd').split('\n', 1)[1][:4])
-	form['region'] = form.get('bd').split('\n', 1)[1].split('/')[1].split()
-	form['category'] = form.get('bd').split('\n', 1)[1].split('/')[-1].split()
-	# 实例化一个 movie 类
-	movie = Movie(form)
-	return movie
+	# 保存电影信息
+	# form['title'] = e('.title').text()
+	# form['quote'] = e('.inq').text()
+	# form['cover_url'] = e('img').attr('src')
+	# form['score'] = float(e('.rating_num').text())
+	# form['ranking'] = int(e('em').text())
+	# # 选评论人数比较麻烦
+	# star = e('.star')
+	# span = pq(star)
+	# number_of_comments = span('span:nth-child(4)').text()
+	# form['number_of_comments'] = number_of_comments
+	# form['bd'] = e('.bd > p:nth-child(1)').text()
+	# form['time'] = int(form.get('bd').split('\n', 1)[1][:4])
+	# form['region'] = form.get('bd').split('\n', 1)[1].split('/')[1].split()
+	# form['category'] = form.get('bd').split('\n', 1)[1].split('/')[-1].split()
+	# # 实例化一个 movie 类
+	# movie = Movie(form)
+	# return movie
+
+	# zhihuAnser
+	zhihu_host = 'https://www.zhihu.com'
+	form['link'] = zhihu_host + e('h2 > a').attr('href')
+	form['question'] = e('h2 > a').text()
+	form['agree'] = e('.zm-item-vote > a').text()
+	form['author'] = e('.author-link').text()
+	form['anser'] = e('.zh-summary').text()
+	form['comments'] = e('.toggle-comment').text()
+	anser = Anser(form)
+	return anser
 
 
 def cached_url(url):
@@ -125,7 +140,7 @@ def cached_url(url):
 	节省时间
 	'''
 	folder = 'cached'
-	filename = url.split('=', 1)[-1] + '.html'
+	filename = url.rsplit('=', 1)[-1] + '.html'
 	path = os.path.join(folder, filename)
 	# 如果本地有缓存, 直接读取返回
 	if os.path.exists(path):
