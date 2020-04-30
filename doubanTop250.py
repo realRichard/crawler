@@ -28,7 +28,7 @@ def main():
 		# download_img('doubanTop250', movies)
 	log('movie_list', type(movie_list), len(movie_list))
 	# 两种存储数据的方式, mongodb, 写入数据文件(json格式)
-	# insert_many(db, 'doubanTop250', movie_list)
+	insert_many(db, 'doubanTop250', movie_list)
 	# 写入文件
 	save_to_file(movie_list, 'doubanTop250.txt')
 

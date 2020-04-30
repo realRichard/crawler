@@ -30,6 +30,10 @@
 
     title, quoto, cover_image, ranking, score, comments, time, region, category...
 
+    Write to file in JSON format
+
+    save to mongodb
+
 ### data analysis and visualization
 
 1. score the top ten
