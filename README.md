@@ -18,6 +18,12 @@
 
 ***
 
+##  **Note**
+
+    With caching, the crawler was a little slow the first time, and it was a flash later
+
+***
+
 ##  doubanTop250
 
 ### crawling movie data
